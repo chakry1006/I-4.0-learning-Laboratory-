@@ -13,14 +13,14 @@ int slt_sw = 27;
 
 int udsrrlt_sw[3] = {29,31,33}; //Up and down Belt Right Side Switches, starting from bottom
 int rlsrlt_sw[3] = {2,35,37}; //Storage-Retrieval Belt Switches from Right to Left
-int hbslt_sw[4] = {41,43,45,47}; //High bay switches, from wall to source
-int udsrllt_sw[3] = {38,48,40}; //Up and down Belt Right Side Switches, starting from bottom
+int hbslt_sw[4] = {47,45,43,41}; //High bay switches, from wall to source
+int udsrllt_sw[3] = {38,48,40}; //Up and down Belt Left Side Switches, starting from bottom
 
-void store(int row, int column)
+void storeA(int row, int column)
 {
      Serial1.write(0xa3);
     storingCompleted = false;
-    while(!digitalRead(sc3sens)) {
+    while(digitalRead(sc3sens)) {
       Serial.println("Second & Third belt forward");
     digitalWrite(6, HIGH);
     digitalWrite(7, HIGH);
@@ -43,24 +43,27 @@ void store(int row, int column)
     digitalWrite(12, HIGH);
     digitalWrite(30, LOW);
     digitalWrite(32, HIGH);
+    //Serial.println("inrlsrlt");
   }
-  while(digitalRead(udsrrlt_sw[1]))
+  //if ( (sc3sens == 1) && (srbsens == 1) && (rlsrlt_sw[0] == 1))
+  while(digitalRead(udsrrlt_sw[0]))
   {
     Serial.println("SRB stop. Third Belt forward");
     digitalWrite(30, HIGH);
     digitalWrite(32, HIGH);
     digitalWrite(6, HIGH);
-    digitalWrite(7, HIGH);
+   digitalWrite(7, HIGH);
     digitalWrite(8, HIGH);
     digitalWrite(9, HIGH);
-    digitalWrite(11, HIGH);
+  digitalWrite(11, HIGH);
     digitalWrite(12, LOW);
-    while (digitalRead(48)) {
+    while (digitalRead(29)) {
       digitalWrite(24, LOW);
       digitalWrite(26, HIGH);
+     Serial.println("break2");
     }
     digitalWrite(26, HIGH);
-    digitalWrite(24, HIGH);
+   digitalWrite(24, HIGH);
 
   }
   
@@ -68,18 +71,24 @@ void store(int row, int column)
   {
     Serial.println("SRB BACKWARD");
     digitalWrite(30, HIGH);
-    digitalWrite(32, LOW);
+   digitalWrite(32, LOW);
     digitalWrite(6, HIGH);
     digitalWrite(7, HIGH);
     digitalWrite(8, HIGH);
     digitalWrite(9, HIGH);
-    digitalWrite(11, HIGH);
     digitalWrite(12, HIGH);
   }
 
   //Until here, common for storage of both A and B
+  while(digitalRead(udsrllt_sw[0]))
+  {
+    digitalWrite(32, HIGH);
+    digitalWrite(30, HIGH); 
+    digitalWrite(26, LOW);
+    digitalWrite(24, HIGH);
+    }
 
-  while(digitalRead(udsrrlt_sw[column]))
+  while (digitalRead(udsrrlt_sw[column] ))
   {
     digitalWrite(11, HIGH);
     digitalWrite(12, HIGH);
@@ -90,7 +99,7 @@ void store(int row, int column)
     Serial.println("MATERIAL IS INSIDE STOP ALL MOTORS & Move ASRS UP");
   }
 
-  while(digitalRead(hbslt_sw[row])) 
+  while (digitalRead(hbslt_sw[row])) 
   {
     digitalWrite(26, HIGH);
     digitalWrite(24, HIGH);
@@ -133,7 +142,7 @@ void store(int row, int column)
     Serial.println("MOVE BACK  S & R BELT AFTER STORING MATERIAL "); //Recent changes here
   }
 
-  while(digitalRead(udsrrlt_sw[0]))
+  while(digitalRead(udsrllt_sw[0]))
   {
     digitalWrite(26, LOW);
     digitalWrite(24, HIGH);
@@ -144,7 +153,7 @@ void store(int row, int column)
     Serial.println("STOP S & R BELT AFTER STORING MATERIAL AND MOVE BELT DOWNWARDS ");
   }
 
-  while(digitalRead(hbslt_sw[0]))
+  while(digitalRead(slt_sw))
   {
     digitalWrite(26, HIGH);
     digitalWrite(24, HIGH);
@@ -171,7 +180,7 @@ void store(int row, int column)
 }
 
 
-void storeL(int row, int column)
+void storeB(int row, int column)
 {
   
      Serial1.write(0xa3);
@@ -234,7 +243,14 @@ void storeL(int row, int column)
   }
 
   //Until here, common for storage of both A and B
-
+  
+  while(digitalRead(udsrllt_sw[0]))
+  {
+    digitalWrite(32, HIGH);
+    digitalWrite(30, HIGH); 
+    digitalWrite(26, LOW);
+    digitalWrite(24, HIGH);
+   }
   while(digitalRead(udsrrlt_sw[column]))
   {
     digitalWrite(11, HIGH);
@@ -326,10 +342,12 @@ void storeL(int row, int column)
   }
 }
 
+
+
 /*Retrieving codes..........................
  * .........................................
  */
-
+/*
 void retrieve(int row, int column)
 {
   int sc2sens = digitalRead(4); //pin4
@@ -583,4 +601,4 @@ void retrieveL13()
     digitalWrite(26, HIGH);
     
   }
-}
+}*/
